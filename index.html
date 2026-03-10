@@ -244,13 +244,16 @@
         .hero-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             width: 100%;
             gap: 50px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-text {
-            flex: 1;
+            flex: 0 0 auto;
+            max-width: 650px;
         }
 
         .hero-text h3 {
@@ -269,6 +272,7 @@
             margin-bottom: 20px;
             background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -1px;
         }
@@ -302,14 +306,6 @@
             gap: 20px;
         }
 
-        .hero-image {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
         .flutter-logo-container {
             width: 350px;
             height: 350px;
@@ -321,6 +317,145 @@
             width: 100%;
             height: 100%;
             filter: drop-shadow(0 0 30px rgba(69, 209, 253, 0.3));
+        }
+
+        /* Background Screenshots Carousel */
+        .screenshots-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 1;
+            z-index: 0;
+            perspective: 2000px;
+        }
+
+        /* Gradient overlay on screenshots */
+        .screenshots-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center,
+                    rgba(3, 7, 18, 0.4) 0%,
+                    rgba(3, 7, 18, 0.8) 70%,
+                    rgba(3, 7, 18, 1) 100%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Ambient glow effect */
+        .screenshots-bg::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(69, 209, 253, 0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            filter: blur(60px);
+            pointer-events: none;
+            animation: pulseGlow 4s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .screenshot-track {
+            position: relative;
+            width: 260px;
+            height: 520px;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            transform: rotateY(-10deg) rotateX(5deg);
+        }
+
+        .screenshot-item {
+            position: absolute;
+            inset: 0;
+            width: 260px;
+            height: 520px;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 0 40px rgba(69, 209, 253, 0.15);
+            border: 2px solid rgba(69, 209, 253, 0.3);
+            pointer-events: all;
+            cursor: pointer;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, z-index 0s;
+            background: #0d1117;
+            opacity: 0;
+            transform: translateZ(-200px) scale(0.8);
+            z-index: 0;
+        }
+
+        .screenshot-item.active {
+            opacity: 1;
+            transform: translateZ(0) scale(1);
+            z-index: 10;
+        }
+
+        .screenshot-item.prev {
+            opacity: 0;
+            transform: rotateY(-90deg) translateX(-100px) translateZ(-100px);
+            z-index: 5;
+        }
+
+        .screenshot-item.next {
+            opacity: 0.4;
+            transform: translateZ(-100px) scale(0.9) translateY(20px);
+            z-index: 5;
+        }
+
+        /* Flipping animation */
+        .screenshot-item.flipping {
+            animation: flipToBack 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            z-index: 11;
+        }
+
+        @keyframes flipToBack {
+            0% {
+                transform: translateZ(0) scale(1) rotateY(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateZ(200px) scale(1.1) rotateY(-90deg);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateZ(-200px) scale(0.8) rotateY(-180deg);
+                opacity: 0;
+            }
+        }
+
+        .screenshot-item:hover {
+            border-color: rgba(69, 209, 253, 0.8);
+            box-shadow: 0 0 50px rgba(69, 209, 253, 0.3);
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Pause individual screenshot animations when screen is narrow */
+        @media (max-width: 768px) {
+
+            .screenshot-item:nth-child(odd),
+            .screenshot-item:nth-child(even),
+            .screenshot-item:nth-child(3n) {
+                animation: none !important;
+            }
         }
 
         /* About Section */
@@ -708,6 +843,38 @@
 
         .project-card:hover .project-img img {
             transform: scale(1.1);
+        }
+
+        .screenshot-strip-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screenshot-strip {
+            display: flex;
+            height: 100%;
+            gap: 5px;
+            animation: strip-scroll 14s linear infinite;
+            width: max-content;
+        }
+
+        .screenshot-strip img {
+            height: 100%;
+            width: auto;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        @keyframes strip-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .project-card:hover .screenshot-strip {
+            animation-play-state: paused;
         }
 
         .project-content {
@@ -1710,6 +1877,195 @@
             opacity: 1;
             visibility: visible;
         }
+
+        /* === Responsive === */
+        @media (max-width: 1024px) {
+            .screenshots-bg {
+                width: 50%;
+                opacity: 0.9;
+            }
+
+            .screenshot-item {
+                width: 200px;
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-text {
+                max-width: 100%;
+            }
+
+            .hero-text p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-btns {
+                justify-content: center;
+            }
+
+            .screenshots-bg {
+                width: 100%;
+                opacity: 0.8;
+            }
+
+            .screenshots-bg::before {
+                background: linear-gradient(to top,
+                        transparent 0%,
+                        rgba(3, 7, 18, 0.5) 100%);
+            }
+
+            .screenshot-item {
+                width: 170px;
+                height: 340px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .screenshots-bg {
+                opacity: 0.6;
+            }
+
+            .screenshots-bg::after {
+                display: none;
+            }
+
+            .screenshot-item {
+                width: 150px;
+                height: 300px;
+            }
+
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+        }
+
+        /* Phone Lightbox */
+        .phone-frame {
+            cursor: pointer;
+        }
+
+        #phone-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            justify-content: center;
+            align-items: center;
+            animation: lightbox-in 0.35s ease;
+        }
+
+        #phone-lightbox.active {
+            display: flex;
+        }
+
+        @keyframes lightbox-in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .lightbox-phone {
+            width: 280px;
+            background: #0d1117;
+            border-radius: 38px;
+            border: 2px solid rgba(69, 209, 253, 0.5);
+            overflow: hidden;
+            box-shadow:
+                0 40px 100px rgba(0, 0, 0, 0.7),
+                0 0 60px rgba(69, 209, 253, 0.2);
+            transform: scale(0.7);
+            animation: phonePopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
+        }
+
+        @keyframes phonePopIn {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .lightbox-phone::before {
+            content: '';
+            display: block;
+            height: 30px;
+            background: #0d1117;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lightbox-notch {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 12px;
+            background: #1a1f2e;
+            border-radius: 10px;
+            z-index: 2;
+        }
+
+        .lightbox-phone img {
+            width: 100%;
+            display: block;
+        }
+
+        .lightbox-phone::after {
+            content: '';
+            display: block;
+            height: 32px;
+            background: #0d1117;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lightbox-home-bar {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(69, 209, 253, 0.2);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
     </style>
 </head>
 
@@ -1743,48 +2099,8 @@
         <div class="container">
             <nav>
                 <a href="#" class="logo">
-                    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="logoBg" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#45D1FD" stop-opacity="0.18" />
-                                <stop offset="100%" stop-color="#042B59" stop-opacity="0.35" />
-                            </linearGradient>
-                            <linearGradient id="nGrad" x1="6" y1="11" x2="20" y2="33" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#8AF0FF" />
-                                <stop offset="100%" stop-color="#45D1FD" />
-                            </linearGradient>
-                            <linearGradient id="rGrad" x1="22" y1="11" x2="38" y2="33" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#ffffff" />
-                                <stop offset="100%" stop-color="#94a3b8" />
-                            </linearGradient>
-                            <filter id="logoGlow">
-                                <feGaussianBlur stdDeviation="1.5" result="blur" />
-                                <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <!-- Background pill -->
-                        <rect width="44" height="44" rx="11" fill="url(#logoBg)" />
-                        <rect width="44" height="44" rx="11" fill="none" stroke="url(#nGrad)" stroke-width="1" />
-                        <!-- N letter -->
-                        <g filter="url(#logoGlow)">
-                            <path d="M6 32V12L19 32V12" stroke="url(#nGrad)" stroke-width="2.6" stroke-linecap="round"
-                                stroke-linejoin="round" fill="none" />
-                        </g>
-                        <!-- R letter -->
-                        <g filter="url(#logoGlow)">
-                            <path d="M23 32V12" stroke="url(#rGrad)" stroke-width="2.6" stroke-linecap="round"
-                                fill="none" />
-                            <path d="M23 12 C31 12 35 14.5 35 19.5 C35 24 31 26 23 26" stroke="url(#rGrad)"
-                                stroke-width="2.6" stroke-linecap="round" fill="none" />
-                            <path d="M27 26 L35.5 32" stroke="url(#rGrad)" stroke-width="2.6" stroke-linecap="round"
-                                fill="none" />
-                        </g>
-                        <!-- Accent dot -->
-                        <circle cx="39" cy="8" r="2.5" fill="#45D1FD" opacity="0.85" />
-                    </svg></a>
+                    <img src="logos/portolio_logo.png" alt="NR Logo"
+                        style="height: 44px; width: auto; object-fit: contain;"></a>
                 <ul class="nav-links" id="nav-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">About</a></li>
@@ -1815,6 +2131,12 @@
             <div class="particle"></div>
             <div class="particle"></div>
         </div>
+        <!-- Background Screenshots -->
+        <div class="screenshots-bg">
+            <div class="screenshot-track" id="screenshot-track">
+                <!-- Screenshots will be dynamically inserted here -->
+            </div>
+        </div>
         <div class="container hero-content">
             <div class="hero-text reveal">
                 <h3>Hi, I'm</h3>
@@ -1825,26 +2147,6 @@
                 <div class="hero-btns">
                     <a href="#projects" class="btn btn-primary"><i class="fa-solid fa-briefcase"></i> View Work</a>
                     <a href="#hire-me" class="btn btn-outline"><i class="fa-solid fa-handshake"></i> Hire Me</a>
-                </div>
-            </div>
-            <div class="hero-image reveal" style="transition-delay: 0.2s;">
-                <div class="flutter-logo-container">
-                    <svg class="flutter-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g filter="url(#glow)">
-                            <path d="M57.5 10L17.5 50L31.5 64L71.5 24H57.5Z" fill="#45D1FD" />
-                            <path d="M43.5 78L31.5 66L45.5 52L69.5 76L55.5 90H69.5L83.5 76L69.5 62L43.5 78Z"
-                                fill="#042B59" />
-                            <path d="M31.5 66L17.5 80L31.5 94H45.5L31.5 80V66Z" fill="#45D1FD" />
-                        </g>
-                        <defs>
-                            <filter id="glow" x="0" y="0" width="100" height="100" filterUnits="userSpaceOnUse"
-                                color-interpolation-filters="sRGB">
-                                <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                                <feGaussianBlur stdDeviation="3" result="effect1_foregroundBlur" />
-                            </filter>
-                        </defs>
-                    </svg>
                 </div>
             </div>
         </div>
@@ -1970,19 +2272,6 @@
                     </div>
                 </div>
 
-                <div class="experience-card spotlight-card reveal" style="transition-delay: 0.4s;">
-                    <div class="exp-header">
-                        <div class="exp-role">Software Developer (C++ / Python)</div>
-                        <div class="exp-date">2018 - 2020</div>
-                    </div>
-                    <div class="exp-company"><i class="fa-solid fa-building"></i> DataSys Corp</div>
-                    <p class="exp-desc">Built backend data processing scripts using Python and optimized
-                        performance-critical algorithms using C++. Collaborated closely with the data science team to
-                        streamline ML pipelines.</p>
-                    <div class="exp-skills">
-                        <span>Python</span><span>C++</span><span>Backend</span>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -2091,6 +2380,38 @@
                 <!-- Project 1 -->
                 <div class="project-card reveal">
                     <div class="project-img">
+                        <div class="screenshot-strip-wrapper">
+                            <div class="screenshot-strip">
+                                <img src="featured_projects/life_loggger/6161025475837365902.jpg" alt="Life Logger Screenshot 1">
+                                <img src="featured_projects/life_loggger/6161025475837365903.jpg" alt="Life Logger Screenshot 2">
+                                <img src="featured_projects/life_loggger/6161025475837365904.jpg" alt="Life Logger Screenshot 3">
+                                <img src="featured_projects/life_loggger/6161025475837365905.jpg" alt="Life Logger Screenshot 4">
+                                <img src="featured_projects/life_loggger/6161025475837365902.jpg" alt="Life Logger Screenshot 1">
+                                <img src="featured_projects/life_loggger/6161025475837365903.jpg" alt="Life Logger Screenshot 2">
+                                <img src="featured_projects/life_loggger/6161025475837365904.jpg" alt="Life Logger Screenshot 3">
+                                <img src="featured_projects/life_loggger/6161025475837365905.jpg" alt="Life Logger Screenshot 4">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-content">
+                        <div class="project-tags">
+                            <span class="tag">Flutter / Dart 3</span>
+                            <span class="tag">Firebase</span>
+                            <span class="tag">Hive</span>
+                            <span class="tag">GetX</span>
+                        </div>
+                        <h3 class="project-title">Life Logger</h3>
+                        <p class="project-desc">A cross-platform mobile app for capturing structured developer logs, daily notes, and nested task lists with deadlines and reminders. Works fully offline with Hive local persistence and optionally syncs to Firebase Firestore with Last-Write-Wins conflict resolution. Built with clean architecture, GetX for DI and reactive state, and a polished Material UI featuring dark mode, tag filtering, full-text search, soft-delete trash, and background sync via WorkManager.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/nisanray/life_logger" title="View Source" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i></a>
+                            <a href="#" title="Play Store"><i class="fa-brands fa-google-play"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card reveal" style="transition-delay: 0.2s;">
+                    <div class="project-img">
                         <div class="mockup-app" style="background: linear-gradient(135deg, #0f172a, #3b82f6);">
                             <div class="mockup-header"></div>
                             <div class="mockup-box" style="height: 100px;"></div>
@@ -2117,8 +2438,8 @@
                     </div>
                 </div>
 
-                <!-- Project 2 -->
-                <div class="project-card reveal" style="transition-delay: 0.2s;">
+                <!-- Project 3 -->
+                <div class="project-card reveal" style="transition-delay: 0.3s;">
                     <div class="project-img">
                         <div class="mockup-app" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8);">
                             <div class="mockup-header" style="width: 50%;"></div>
@@ -2149,8 +2470,8 @@
                     </div>
                 </div>
 
-                <!-- Project 3 -->
-                <div class="project-card reveal" style="transition-delay: 0.3s;">
+                <!-- Project 4 -->
+                <div class="project-card reveal" style="transition-delay: 0.4s;">
                     <div class="project-img">
                         <div class="mockup-app" style="background: linear-gradient(45deg, #8b5cf6, #d946ef);">
                             <div class="mockup-header"></div>
@@ -2177,33 +2498,6 @@
                         <div class="project-links">
                             <a href="#" title="View Source"><i class="fa-brands fa-github"></i></a>
                             <a href="#" title="Live Demo"><i class="fa-solid fa-link"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 4 -->
-                <div class="project-card reveal" style="transition-delay: 0.4s;">
-                    <div class="project-img">
-                        <div class="mockup-app" style="background: linear-gradient(135deg, #10b981, #34d399);">
-                            <div class="mockup-header" style="width: 30%;"></div>
-                            <div class="mockup-box" style="height: 20px; margin-top: 10px;"></div>
-                            <div class="mockup-box" style="height: 20px; margin-top: 10px;"></div>
-                            <div class="mockup-box" style="height: 20px; margin-top: 10px;"></div>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <div class="project-tags">
-                            <span class="tag">Flutter</span>
-                            <span class="tag">Hive/SQLite</span>
-                            <span class="tag">Offline-First</span>
-                        </div>
-                        <h3 class="project-title">Task & Notes Manager</h3>
-                        <p class="project-desc">An offline-first productivity suite combining task management and
-                            rich-text notes. Includes custom tagging, priority levels, Kanban/Calendar views, and local
-                            data persistence.</p>
-                        <div class="project-links">
-                            <a href="#" title="View Source"><i class="fa-brands fa-github"></i></a>
-                            <a href="#" title="Play Store"><i class="fa-brands fa-google-play"></i></a>
                         </div>
                     </div>
                 </div>
@@ -2672,7 +2966,137 @@
             });
         }
         form.addEventListener("submit", handleSubmit);
+
+        // Lightbox close handlers
+        const lightbox = document.getElementById('phone-lightbox');
+        const lightboxClose = document.getElementById('lightbox-close');
+
+        function closeLightbox() {
+            if (lightbox) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        if (lightboxClose) {
+            lightboxClose.addEventListener('click', closeLightbox);
+        }
+        if (lightbox) {
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // 10. Background Screenshots Flip Animation
+        window.addEventListener('DOMContentLoaded', () => {
+            const allScreenshots = [
+                'app_screenshots/6156640408717430256.jpg',
+                'app_screenshots/6156640408717430257.jpg',
+                'app_screenshots/6156640408717430258.jpg',
+                'app_screenshots/6156640408717430259.jpg',
+                'app_screenshots/6156640408717430260.jpg',
+                'app_screenshots/6156640408717430261.jpg',
+                'app_screenshots/6156640408717430262.jpg',
+                'app_screenshots/6156640408717430263.jpg',
+                'app_screenshots/6156640408717430264.jpg',
+                'app_screenshots/6156640408717430265.jpg',
+                'app_screenshots/6156640408717430266.jpg',
+                'app_screenshots/6156640408717430267.jpg',
+            ];
+
+            const track = document.getElementById('screenshot-track');
+            if (track) {
+                // Populate screenshots
+                allScreenshots.forEach((src, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'screenshot-item';
+                    if (index === 0) item.classList.add('active');
+                    if (index === 1) item.classList.add('next');
+
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = 'App Screenshot';
+                    item.appendChild(img);
+                    track.appendChild(item);
+                });
+
+                const items = document.querySelectorAll('.screenshot-item');
+                let currentIndex = 0;
+
+                const flipScreenshots = () => {
+                    const currentItem = items[currentIndex];
+                    const nextIndex = (currentIndex + 1) % items.length;
+                    const nextItem = items[nextIndex];
+                    const futureIndex = (nextIndex + 1) % items.length;
+                    const futureItem = items[futureIndex];
+
+                    // Start flipping current item
+                    currentItem.classList.remove('active');
+                    currentItem.classList.add('flipping');
+
+                    // Set next item to active
+                    nextItem.classList.remove('next');
+                    nextItem.classList.add('active');
+
+                    // Set future item to next
+                    futureItem.classList.add('next');
+
+                    // After animation completes, clean up
+                    setTimeout(() => {
+                        currentItem.classList.remove('flipping');
+                        // Reset other classes
+                        items.forEach((item, i) => {
+                            if (i !== nextIndex && i !== futureIndex) {
+                                item.className = 'screenshot-item';
+                            }
+                        });
+                    }, 800);
+
+                    currentIndex = nextIndex;
+                };
+
+                // Auto cycle
+                setInterval(flipScreenshots, 4000);
+
+                // Lightbox handlers
+                const lightbox = document.getElementById('phone-lightbox');
+                const lightboxImg = document.getElementById('lightbox-img');
+
+                if (lightbox && lightboxImg) {
+                    items.forEach(item => {
+                        item.addEventListener('click', () => {
+                            const img = item.querySelector('img');
+                            if (img) {
+                                lightboxImg.src = img.src;
+                                lightboxImg.alt = img.alt;
+                                const lbPhone = document.querySelector('.lightbox-phone');
+                                if (lbPhone) {
+                                    lbPhone.style.animation = 'none';
+                                    lbPhone.offsetHeight;
+                                    lbPhone.style.animation = '';
+                                }
+                                lightbox.classList.add('active');
+                                document.body.style.overflow = 'hidden';
+                            }
+                        });
+                    });
+                }
+            }
+        });
     </script>
+    <!-- Phone Screenshot Lightbox -->
+    <div id="phone-lightbox">
+        <button class="lightbox-close" id="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+        <div class="lightbox-phone">
+            <div class="lightbox-notch"></div>
+            <img id="lightbox-img" src="" alt="App Screenshot">
+            <div class="lightbox-home-bar"></div>
+        </div>
+    </div>
+
 </body>
 
 </html>
