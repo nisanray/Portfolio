@@ -319,142 +319,331 @@
             filter: drop-shadow(0 0 30px rgba(69, 209, 253, 0.3));
         }
 
-        /* Background Screenshots Carousel */
+        /* ─── Premium Hero Screenshot Showcase ─── */
         .screenshots-bg {
             position: absolute;
             top: 0;
             right: 0;
-            width: 60%;
+            width: 55%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             pointer-events: none;
-            opacity: 1;
             z-index: 0;
-            perspective: 2000px;
         }
 
-        /* Gradient overlay on screenshots */
+        /* left-edge fade into hero text */
         .screenshots-bg::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center,
-                    rgba(3, 7, 18, 0.4) 0%,
-                    rgba(3, 7, 18, 0.8) 70%,
-                    rgba(3, 7, 18, 1) 100%);
+            background:
+                linear-gradient(to right, var(--bg-color) 0%, transparent 30%),
+                linear-gradient(to top, var(--bg-color) 0%, transparent 20%),
+                linear-gradient(to bottom, var(--bg-color) 0%, transparent 12%);
+            z-index: 20;
             pointer-events: none;
-            z-index: 10;
         }
 
-        /* Ambient glow effect */
+        /* ambient cyan glow behind phones */
         .screenshots-bg::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(69, 209, 253, 0.15) 0%, transparent 70%);
+            width: 340px;
+            height: 340px;
+            background: radial-gradient(circle, rgba(69, 209, 253, 0.18) 0%, transparent 70%);
             transform: translate(-50%, -50%);
-            filter: blur(60px);
+            filter: blur(55px);
+            animation: pulseGlow 5s ease-in-out infinite;
+            z-index: 0;
             pointer-events: none;
-            animation: pulseGlow 4s ease-in-out infinite;
-            z-index: -1;
         }
 
-        .screenshot-track {
+        /* ─── 3D Phone Carousel ─── */
+        .carousel-scene {
             position: relative;
-            width: 260px;
-            height: 520px;
-            perspective: 2000px;
-            transform-style: preserve-3d;
-            transform: rotateY(-10deg) rotateX(5deg);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1100px;
         }
 
-        .screenshot-item {
+        .phone-carousel {
+            width: 170px;
+            height: 370px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: carouselSpin 16s linear infinite;
+        }
+
+        @keyframes carouselSpin {
+            from {
+                transform: rotateY(0deg);
+            }
+
+            to {
+                transform: rotateY(-360deg);
+            }
+        }
+
+        /* Each phone card in the carousel */
+        .carousel-phone {
             position: absolute;
             inset: 0;
-            width: 260px;
-            height: 520px;
-            border-radius: 32px;
+            transform: rotateY(calc(var(--i) * 90deg)) translateZ(250px);
+            transform-origin: center center;
+        }
+
+        /* Phone frame styled like the featured project viewer */
+        .carousel-phone .hero-featured-phone {
+            width: 170px;
+            background: #0d1117;
+            border-radius: 24px;
+            border: 1.5px solid rgba(69, 209, 253, 0.5);
             overflow: hidden;
             box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                0 0 40px rgba(69, 209, 253, 0.15);
-            border: 2px solid rgba(69, 209, 253, 0.3);
-            pointer-events: all;
-            cursor: pointer;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, z-index 0s;
+                0 25px 60px rgba(0, 0, 0, 0.65),
+                0 0 30px rgba(69, 209, 253, 0.3);
+            position: relative;
+        }
+
+        .carousel-phone .hero-featured-phone::before,
+        .carousel-phone .hero-featured-phone::after {
+            content: '';
+            display: block;
+            height: 20px;
             background: #0d1117;
-            opacity: 0;
-            transform: translateZ(-200px) scale(0.8);
-            z-index: 0;
         }
 
-        .screenshot-item.active {
-            opacity: 1;
-            transform: translateZ(0) scale(1);
-            z-index: 10;
+        .carousel-phone .hero-featured-phone::before {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .screenshot-item.prev {
-            opacity: 0;
-            transform: rotateY(-90deg) translateX(-100px) translateZ(-100px);
-            z-index: 5;
+        .carousel-phone .hero-featured-phone::after {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .screenshot-item.next {
-            opacity: 0.4;
-            transform: translateZ(-100px) scale(0.9) translateY(20px);
-            z-index: 5;
+        .carousel-phone .hero-featured-notch {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            height: 8px;
+            background: #1a1f2e;
+            border-radius: 8px;
+            z-index: 3;
         }
 
-        /* Flipping animation */
-        .screenshot-item.flipping {
-            animation: flipToBack 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            z-index: 11;
+        .carousel-phone .hero-featured-home-bar {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            z-index: 3;
         }
 
-        @keyframes flipToBack {
-            0% {
-                transform: translateZ(0) scale(1) rotateY(0);
-                opacity: 1;
-            }
-
-            50% {
-                transform: translateZ(200px) scale(1.1) rotateY(-90deg);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: translateZ(-200px) scale(0.8) rotateY(-180deg);
-                opacity: 0;
-            }
+        .carousel-phone .hero-featured-img-container {
+            width: 100%;
+            aspect-ratio: 9/19.5;
+            overflow: hidden;
+            background: #000;
+            position: relative;
         }
 
-        .screenshot-item:hover {
-            border-color: rgba(69, 209, 253, 0.8);
-            box-shadow: 0 0 50px rgba(69, 209, 253, 0.3);
-        }
-
-        .screenshot-item img {
+        .carousel-phone .hero-featured-img-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
+            transform-origin: center center;
+            backface-visibility: hidden;
         }
 
-        /* Pause individual screenshot animations when screen is narrow */
-        @media (max-width: 768px) {
+        /* Dot indicators below carousel */
+        .phone-dots {
+            position: absolute;
+            bottom: 56px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
 
-            .screenshot-item:nth-child(odd),
-            .screenshot-item:nth-child(even),
-            .screenshot-item:nth-child(3n) {
-                animation: none !important;
+        .phone-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.4s ease, transform 0.4s ease;
+        }
+
+        .phone-dot.active {
+            background: var(--primary-color);
+            transform: scale(1.3);
+        }
+
+        /* floating animation for whole scene */
+        .carousel-scene {
+            animation: stageFloat 7s ease-in-out infinite;
+        }
+
+        @keyframes stageFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-14px);
+            }
+        }
+
+        /* Screenshot slide: current slides down, next rises up — frame stays still */
+        @keyframes hero-push-out {
+            0% {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes hero-push-in {
+            0% {
+                transform: translateY(-110%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+        }
+
+        .phone-screen img.push-out {
+            animation: hero-push-out 0.52s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+            z-index: 2;
+        }
+
+        .phone-screen img.push-in {
+            animation: hero-push-in 0.52s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+            z-index: 3;
+        }
+
+        /* ── Center (main / foreground) phone ── */
+        .phone-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .phone-center .phone-frame {
+            width: 238px;
+            height: 488px;
+            box-shadow:
+                0 40px 100px rgba(0, 0, 0, 0.7),
+                inset 0 1.5px 0 rgba(255, 255, 255, 0.22),
+                0 0 0 1px rgba(69, 209, 253, 0.18),
+                0 0 55px rgba(69, 209, 253, 0.15);
+            border-color: rgba(69, 209, 253, 0.25);
+        }
+
+        .phone-center:hover .phone-frame {
+            box-shadow:
+                0 40px 100px rgba(0, 0, 0, 0.7),
+                inset 0 1.5px 0 rgba(255, 255, 255, 0.28),
+                0 0 0 1.5px rgba(69, 209, 253, 0.4),
+                0 0 70px rgba(69, 209, 253, 0.25);
+        }
+
+        /* ── Left background phone ── */
+        .phone-left {
+            top: 50%;
+            left: 14px;
+            transform: translateY(-46%) rotateY(18deg) scale(0.82);
+            transform-origin: left center;
+            z-index: 5;
+            opacity: 0.5;
+            filter: brightness(0.55) blur(1.5px);
+        }
+
+        /* ── Right background phone ── */
+        .phone-right {
+            top: 50%;
+            right: 14px;
+            transform: translateY(-46%) rotateY(-18deg) scale(0.82);
+            transform-origin: right center;
+            z-index: 5;
+            opacity: 0.5;
+            filter: brightness(0.55) blur(1.5px);
+        }
+
+        /* ── Dot indicators ── */
+        .phone-dots {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .phone-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.4s ease, transform 0.4s ease;
+        }
+
+        .phone-dot.active {
+            background: var(--primary-color);
+            transform: scale(1.3);
+        }
+
+        /* floating animation for whole stage */
+        .phone-stage {
+            animation: stageFloat 7s ease-in-out infinite;
+        }
+
+        @keyframes stageFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-14px);
+            }
+        }
+
+        /* On mobile: show as dimmed decorative background behind hero text */
+        @media (max-width: 768px) {
+            .screenshots-bg {
+                width: 100%;
+                opacity: 0.005;
+                pointer-events: none;
+                z-index: 0;
             }
         }
 
@@ -2303,10 +2492,52 @@
             <div class="particle"></div>
             <div class="particle"></div>
         </div>
-        <!-- Background Screenshots -->
+        <!-- 3D Phone Carousel -->
         <div class="screenshots-bg">
-            <div class="screenshot-track" id="screenshot-track">
-                <!-- Screenshots will be dynamically inserted here -->
+            <div class="carousel-scene">
+                <div class="phone-carousel" id="phone-carousel">
+                    <div class="carousel-phone" style="--i:0">
+                        <div class="hero-featured-phone">
+                            <div class="hero-featured-notch"></div>
+                            <div class="hero-featured-img-container">
+                                <img class="carousel-img" src="app_screenshots/6156640408717430256.jpg"
+                                    alt="App Screenshot">
+                            </div>
+                            <div class="hero-featured-home-bar"></div>
+                        </div>
+                    </div>
+                    <div class="carousel-phone" style="--i:1">
+                        <div class="hero-featured-phone">
+                            <div class="hero-featured-notch"></div>
+                            <div class="hero-featured-img-container">
+                                <img class="carousel-img" src="app_screenshots/6156640408717430259.jpg"
+                                    alt="App Screenshot">
+                            </div>
+                            <div class="hero-featured-home-bar"></div>
+                        </div>
+                    </div>
+                    <div class="carousel-phone" style="--i:2">
+                        <div class="hero-featured-phone">
+                            <div class="hero-featured-notch"></div>
+                            <div class="hero-featured-img-container">
+                                <img class="carousel-img" src="app_screenshots/6156640408717430262.jpg"
+                                    alt="App Screenshot">
+                            </div>
+                            <div class="hero-featured-home-bar"></div>
+                        </div>
+                    </div>
+                    <div class="carousel-phone" style="--i:3">
+                        <div class="hero-featured-phone">
+                            <div class="hero-featured-notch"></div>
+                            <div class="hero-featured-img-container">
+                                <img class="carousel-img" src="app_screenshots/6156640408717430265.jpg"
+                                    alt="App Screenshot">
+                            </div>
+                            <div class="hero-featured-home-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone-dots" id="hero-dots"></div>
             </div>
         </div>
         <div class="container hero-content">
@@ -2789,13 +3020,6 @@
                         </div>
                     </div>
 
-                    <div class="contact-item">
-                        <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
-                        <div class="contact-details">
-                            <h4>Call Me</h4>
-                            <p>01831126629</p>
-                        </div>
-                    </div>
 
                     <div class="contact-item">
                         <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
@@ -3259,9 +3483,9 @@
             }
         });
 
-        // 10. Background Screenshots Flip Animation
+        // 10. Hero 3-Phone Screenshot Showcase
         window.addEventListener('DOMContentLoaded', () => {
-            const allScreenshots = [
+            const heroScreenshots = [
                 'app_screenshots/6156640408717430256.jpg',
                 'app_screenshots/6156640408717430257.jpg',
                 'app_screenshots/6156640408717430258.jpg',
@@ -3276,70 +3500,26 @@
                 'app_screenshots/6156640408717430267.jpg',
             ];
 
-            const track = document.getElementById('screenshot-track');
-            if (track) {
-                // Populate screenshots
-                allScreenshots.forEach((src, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'screenshot-item';
-                    if (index === 0) item.classList.add('active');
-                    if (index === 1) item.classList.add('next');
+            // CSS carouselSpin handles the 3D rotation automatically.
+            // JS just cycles each phone's screenshot periodically.
+            const carouselImgs = document.querySelectorAll('.carousel-img');
+            const perPhone = Math.ceil(heroScreenshots.length / carouselImgs.length);
+            let cycleIndex = 0;
 
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.alt = 'App Screenshot';
-                    item.appendChild(img);
-                    track.appendChild(item);
-                });
-
-                const items = document.querySelectorAll('.screenshot-item');
-                let currentIndex = 0;
-
-                const flipScreenshots = () => {
-                    const currentItem = items[currentIndex];
-                    const nextIndex = (currentIndex + 1) % items.length;
-                    const nextItem = items[nextIndex];
-                    const futureIndex = (nextIndex + 1) % items.length;
-                    const futureItem = items[futureIndex];
-
-                    // Start flipping current item
-                    currentItem.classList.remove('active');
-                    currentItem.classList.add('flipping');
-
-                    // Set next item to active
-                    nextItem.classList.remove('next');
-                    nextItem.classList.add('active');
-
-                    // Set future item to next
-                    futureItem.classList.add('next');
-
-                    // After animation completes, clean up
+            function cycleCarousel() {
+                cycleIndex++;
+                carouselImgs.forEach((img, i) => {
+                    const srcIdx = (cycleIndex + i * perPhone) % heroScreenshots.length;
+                    img.style.transition = 'opacity 0.5s ease';
+                    img.style.opacity = '0';
                     setTimeout(() => {
-                        currentItem.classList.remove('flipping');
-                        // Reset other classes
-                        items.forEach((item, i) => {
-                            if (i !== nextIndex && i !== futureIndex) {
-                                item.className = 'screenshot-item';
-                            }
-                        });
-                    }, 800);
-
-                    currentIndex = nextIndex;
-                };
-
-                // Auto cycle
-                setInterval(flipScreenshots, 4000);
-
-                // Re-wire background items to use the same gallery logic
-                items.forEach((item, index) => {
-                    item.addEventListener('click', () => {
-                        const img = item.querySelector('img');
-                        if (img) {
-                            openGallery("App Showcase", "A glimpse into the user interface and experience of the application.", allScreenshots.slice(index).concat(allScreenshots.slice(0, index)));
-                        }
-                    });
+                        img.src = heroScreenshots[srcIdx];
+                        img.style.opacity = '1';
+                    }, 300);
                 });
             }
+
+            setInterval(cycleCarousel, 4000);
         });
     </script>
     <!-- Phone Screenshot Lightbox Enhanced -->
