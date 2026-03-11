@@ -869,8 +869,13 @@
         }
 
         @keyframes strip-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
         }
 
         .project-card:hover .screenshot-strip {
@@ -1947,6 +1952,7 @@
         }
 
         /* Phone Lightbox */
+        /* Phone Lightbox Gallery Enhanced */
         .phone-frame {
             cursor: pointer;
         }
@@ -1956,40 +1962,71 @@
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: rgba(3, 7, 18, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             justify-content: center;
             align-items: center;
-            animation: lightbox-in 0.35s ease;
+            animation: lightbox-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px;
         }
 
         #phone-lightbox.active {
             display: flex;
         }
 
+        #phone-lightbox.closing {
+            animation: lightbox-out 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
         @keyframes lightbox-in {
             from {
                 opacity: 0;
+                transform: scale(1.04);
             }
 
             to {
                 opacity: 1;
+                transform: scale(1);
             }
         }
 
+        @keyframes lightbox-out {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+        }
+
+        .lightbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            max-width: 1000px;
+            width: 100%;
+            position: relative;
+        }
+
         .lightbox-phone {
-            width: 280px;
+            width: 300px;
+            flex-shrink: 0;
             background: #0d1117;
-            border-radius: 38px;
+            border-radius: 40px;
             border: 2px solid rgba(69, 209, 253, 0.5);
             overflow: hidden;
             box-shadow:
-                0 40px 100px rgba(0, 0, 0, 0.7),
-                0 0 60px rgba(69, 209, 253, 0.2);
-            transform: scale(0.7);
-            animation: phonePopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                0 40px 100px rgba(0, 0, 0, 0.8),
+                0 0 60px rgba(69, 209, 253, 0.3);
+            transform: scale(0.85);
+            animation: phonePopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             position: relative;
+            z-index: 2;
         }
 
         @keyframes phonePopIn {
@@ -2001,70 +2038,205 @@
         .lightbox-phone::before {
             content: '';
             display: block;
-            height: 30px;
+            height: 35px;
             background: #0d1117;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .lightbox-notch {
             position: absolute;
-            top: 10px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70px;
-            height: 12px;
+            width: 80px;
+            height: 14px;
             background: #1a1f2e;
-            border-radius: 10px;
-            z-index: 2;
+            border-radius: 12px;
+            z-index: 3;
+        }
+
+        .lightbox-img-container {
+            width: 100%;
+            aspect-ratio: 9/19.5;
+            overflow: hidden;
+            background: #000;
+            position: relative;
         }
 
         .lightbox-phone img {
             width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
+            transition: opacity 0.3s ease;
         }
 
         .lightbox-phone::after {
             content: '';
             display: block;
-            height: 32px;
+            height: 35px;
             background: #0d1117;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .lightbox-home-bar {
             position: absolute;
-            bottom: 12px;
+            bottom: 14px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70px;
+            width: 80px;
             height: 5px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
-            z-index: 2;
+            z-index: 3;
         }
 
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+        /* Gallery Text Description */
+        .lightbox-info {
+            flex: 1;
+            color: var(--text-main);
+            opacity: 0;
+            transform: translateX(20px);
+            animation: infoIn 0.5s ease 0.2s forwards;
+        }
+
+        @keyframes infoIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .lightbox-info h3 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .lightbox-info p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .lightbox-counter {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Gallery Navigation - fixed to the overlay, always visible */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 56px;
+            height: 56px;
+            background: rgba(15, 20, 35, 0.85);
+            border: 1.5px solid rgba(69, 209, 253, 0.4);
             border-radius: 50%;
             color: #fff;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
+            transition: var(--transition);
+            z-index: 10001;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-btn:hover {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 25px rgba(69, 209, 253, 0.5);
+        }
+
+        .prev-btn {
+            left: 24px;
+        }
+
+        .next-btn {
+            right: 24px;
+        }
+
+        /* Close button - fixed to top-right of overlay, always visible */
+        .lightbox-close {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            width: 50px;
+            height: 50px;
+            background: rgba(15, 20, 35, 0.85);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10002;
+            backdrop-filter: blur(8px);
         }
 
         .lightbox-close:hover {
-            background: rgba(69, 209, 253, 0.2);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            background: #ef4444;
+            border-color: #ef4444;
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 992px) {
+            .lightbox-container {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .lightbox-phone {
+                width: 240px;
+            }
+
+            .prev-btn {
+                left: 12px;
+            }
+
+            .next-btn {
+                right: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lightbox-phone {
+                width: 210px;
+            }
+
+            .nav-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+
+            .prev-btn {
+                left: 8px;
+            }
+
+            .next-btn {
+                right: 8px;
+            }
+
+            .lightbox-close {
+                top: 16px;
+                right: 16px;
+                width: 42px;
+                height: 42px;
+            }
         }
     </style>
 </head>
@@ -2155,13 +2327,13 @@
     <!-- Scrolling Marquee -->
     <div class="marquee-wrapper">
         <div class="marquee-content">
-            <span class="marquee-item">✦ FLUTTER MAGIC</span>
+            <span class="marquee-item">✦ FLUTTER </span>
             <span class="marquee-item">✦ CROSS-PLATFORM EXCELLENCE</span>
             <span class="marquee-item">✦ UI/UX PERFECTION</span>
             <span class="marquee-item">✦ SCALABLE ARCHITECTURE</span>
             <span class="marquee-item">✦ HIGH PERFORMANCE</span>
             <!-- Duplicate for infinite loop -->
-            <span class="marquee-item">✦ FLUTTER MAGIC</span>
+            <span class="marquee-item">✦ FLUTTER </span>
             <span class="marquee-item">✦ CROSS-PLATFORM EXCELLENCE</span>
             <span class="marquee-item">✦ UI/UX PERFECTION</span>
             <span class="marquee-item">✦ SCALABLE ARCHITECTURE</span>
@@ -2378,18 +2550,19 @@
 
             <div class="projects-grid">
                 <!-- Project 1 -->
-                <div class="project-card reveal">
+                <div class="project-card reveal" style="cursor: pointer;"
+                    onclick='openGallery("Life Logger", "A cross-platform mobile app for capturing structured developer logs, daily notes, and nested task lists with deadlines and reminders. Works fully offline with Hive local persistence and optionally syncs to Firebase Firestore with Last-Write-Wins conflict resolution.", ["featured_projects/life_loggger/welcome_screen.jpg", "featured_projects/life_loggger/dashboard.jpg", "featured_projects/life_loggger/log_viewer.jpg", "featured_projects/life_loggger/new_log_entry.jpg"])'>
                     <div class="project-img">
                         <div class="screenshot-strip-wrapper">
                             <div class="screenshot-strip">
-                                <img src="featured_projects/life_loggger/6161025475837365902.jpg" alt="Life Logger Screenshot 1">
-                                <img src="featured_projects/life_loggger/6161025475837365903.jpg" alt="Life Logger Screenshot 2">
-                                <img src="featured_projects/life_loggger/6161025475837365904.jpg" alt="Life Logger Screenshot 3">
-                                <img src="featured_projects/life_loggger/6161025475837365905.jpg" alt="Life Logger Screenshot 4">
-                                <img src="featured_projects/life_loggger/6161025475837365902.jpg" alt="Life Logger Screenshot 1">
-                                <img src="featured_projects/life_loggger/6161025475837365903.jpg" alt="Life Logger Screenshot 2">
-                                <img src="featured_projects/life_loggger/6161025475837365904.jpg" alt="Life Logger Screenshot 3">
-                                <img src="featured_projects/life_loggger/6161025475837365905.jpg" alt="Life Logger Screenshot 4">
+                                <img src="featured_projects/life_loggger/welcome_screen.jpg" alt="Welcome Screen">
+                                <img src="featured_projects/life_loggger/dashboard.jpg" alt="Dashboard">
+                                <img src="featured_projects/life_loggger/log_viewer.jpg" alt="Log Viewer">
+                                <img src="featured_projects/life_loggger/new_log_entry.jpg" alt="New Log Entry">
+                                <img src="featured_projects/life_loggger/welcome_screen.jpg" alt="Welcome Screen">
+                                <img src="featured_projects/life_loggger/dashboard.jpg" alt="Dashboard">
+                                <img src="featured_projects/life_loggger/log_viewer.jpg" alt="Log Viewer">
+                                <img src="featured_projects/life_loggger/new_log_entry.jpg" alt="New Log Entry">
                             </div>
                         </div>
                     </div>
@@ -2401,16 +2574,21 @@
                             <span class="tag">GetX</span>
                         </div>
                         <h3 class="project-title">Life Logger</h3>
-                        <p class="project-desc">A cross-platform mobile app for capturing structured developer logs, daily notes, and nested task lists with deadlines and reminders. Works fully offline with Hive local persistence and optionally syncs to Firebase Firestore with Last-Write-Wins conflict resolution. Built with clean architecture, GetX for DI and reactive state, and a polished Material UI featuring dark mode, tag filtering, full-text search, soft-delete trash, and background sync via WorkManager.</p>
+                        <p class="project-desc">A cross-platform mobile app for capturing structured developer logs,
+                            daily notes, and nested task lists with deadlines and reminders.</p>
                         <div class="project-links">
-                            <a href="https://github.com/nisanray/life_logger" title="View Source" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i></a>
-                            <a href="#" title="Play Store"><i class="fa-brands fa-google-play"></i></a>
+                            <a href="https://github.com/nisanray/life_logger" title="View Source" target="_blank"
+                                rel="noopener noreferrer" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-github"></i></a>
+                            <a href="#" title="Play Store" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-google-play"></i></a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Project 2 -->
-                <div class="project-card reveal" style="transition-delay: 0.2s;">
+                <div class="project-card reveal" style="transition-delay: 0.2s; cursor: pointer;"
+                    onclick='openGallery("PulseChat", "A real-time chatting application featuring instant messaging, online presence, and seamless synchronization, with future offline caching via Hive and end-to-end encryption. Built for scalability and security.", [])'>
                     <div class="project-img">
                         <div class="mockup-app" style="background: linear-gradient(135deg, #0f172a, #3b82f6);">
                             <div class="mockup-header"></div>
@@ -2429,17 +2607,19 @@
                         </div>
                         <h3 class="project-title">PulseChat</h3>
                         <p class="project-desc">A real-time chatting application featuring instant messaging, online
-                            presence, and seamless synchronization, with future offline caching via Hive and end-to-end
-                            encryption.</p>
+                            presence, and seamless synchronization.</p>
                         <div class="project-links">
-                            <a href="#" title="View Source"><i class="fa-brands fa-github"></i></a>
-                            <a href="#" title="Play Store"><i class="fa-brands fa-google-play"></i></a>
+                            <a href="#" title="View Source" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-github"></i></a>
+                            <a href="#" title="Play Store" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-google-play"></i></a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Project 3 -->
-                <div class="project-card reveal" style="transition-delay: 0.3s;">
+                <div class="project-card reveal" style="transition-delay: 0.3s; cursor: pointer;"
+                    onclick='openGallery("Weather App", "A responsive weather application featuring city search with autocomplete, 5-7 day forecasts, GPS-based location, local API caching, and animated weather transitions. Uses OpenWeatherMap API for real-time data.", [])'>
                     <div class="project-img">
                         <div class="mockup-app" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8);">
                             <div class="mockup-header" style="width: 50%;"></div>
@@ -2460,18 +2640,20 @@
                             <span class="tag">Local Caching</span>
                         </div>
                         <h3 class="project-title">Weather App</h3>
-                        <p class="project-desc">A responsive weather application featuring city search with
-                            autocomplete, 5-7 day forecasts, GPS-based location, local API caching, and animated weather
-                            transitions.</p>
+                        <p class="project-desc">A responsive weather application featuring city search, forecasts, and
+                            animated transitions.</p>
                         <div class="project-links">
-                            <a href="#" title="View Source"><i class="fa-brands fa-github"></i></a>
-                            <a href="#" title="Play Store"><i class="fa-brands fa-google-play"></i></a>
+                            <a href="#" title="View Source" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-github"></i></a>
+                            <a href="#" title="Play Store" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-google-play"></i></a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Project 4 -->
-                <div class="project-card reveal" style="transition-delay: 0.4s;">
+                <div class="project-card reveal" style="transition-delay: 0.4s; cursor: pointer;"
+                    onclick='openGallery("FlexCart", "A dynamic multi-category e-commerce platform built with Flutter. Administrators can create product categories with custom attributes, enabling flexible product structures. The app automatically generates product forms and filters based on the category schema.", [])'>
                     <div class="project-img">
                         <div class="mockup-app" style="background: linear-gradient(45deg, #8b5cf6, #d946ef);">
                             <div class="mockup-header"></div>
@@ -2490,20 +2672,19 @@
                             <span class="tag">Flutter Web</span>
                         </div>
                         <h3 class="project-title">FlexCart</h3>
-                        <p class="project-desc">A dynamic multi-category e-commerce platform built with Flutter.
-                            Administrators can create product categories with custom attributes, enabling flexible
-                            product structures across industries such as electronics, clothing, and furniture. The
-                            mobile app automatically generates product forms and filters based on the category schema.
-                        </p>
+                        <p class="project-desc">A dynamic multi-category e-commerce platform with flexible product
+                            structures.</p>
                         <div class="project-links">
-                            <a href="#" title="View Source"><i class="fa-brands fa-github"></i></a>
-                            <a href="#" title="Live Demo"><i class="fa-solid fa-link"></i></a>
+                            <a href="#" title="View Source" onclick="event.stopPropagation()"><i
+                                    class="fa-brands fa-github"></i></a>
+                            <a href="#" title="Live Demo" onclick="event.stopPropagation()"><i
+                                    class="fa-solid fa-link"></i></a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Project 5 -->
- 
+
     </section>
 
 
@@ -2939,27 +3120,143 @@
         }
         form.addEventListener("submit", handleSubmit);
 
-        // Lightbox close handlers
-        const lightbox = document.getElementById('phone-lightbox');
-        const lightboxClose = document.getElementById('lightbox-close');
+        // 11. Project Gallery Lightbox Logic
+        let currentProjectImages = [];
+        let currentImageIndex = 0;
+
+        function openGallery(title, description, images) {
+            const lightbox = document.getElementById('phone-lightbox');
+            const lightboxTitle = document.getElementById('lightbox-project-title');
+            const lightboxDesc = document.getElementById('lightbox-project-desc');
+            const lightboxCounter = document.getElementById('lightbox-counter');
+            const lbPhone = document.querySelector('.lightbox-phone');
+            const lbInfo = document.querySelector('.lightbox-info');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            currentProjectImages = images;
+            currentImageIndex = 0;
+
+            lightboxTitle.textContent = title;
+            lightboxDesc.textContent = description;
+
+            if (images.length === 0) {
+                // No screenshots yet — show a "coming soon" state
+                lbPhone.style.display = 'none';
+                lightboxCounter.textContent = '';
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                // Insert a coming-soon message if not already present
+                let comingSoon = lbInfo.querySelector('.coming-soon-msg');
+                if (!comingSoon) {
+                    comingSoon = document.createElement('div');
+                    comingSoon.className = 'coming-soon-msg';
+                    comingSoon.innerHTML = `
+                        <div style="font-size:3rem; margin-bottom:12px;">📸</div>
+                        <p style="color:var(--primary-color); font-size:1rem; font-weight:600; margin-bottom:6px;">Screenshots coming soon</p>
+                        <p style="color:var(--text-muted); font-size:0.9rem;">I'll be uploading screenshots shortly.</p>
+                    `;
+                    lbInfo.prepend(comingSoon);
+                } else {
+                    comingSoon.style.display = 'block';
+                }
+            } else {
+                // Has screenshots — show phone frame
+                lbPhone.style.display = '';
+                prevBtn.style.display = '';
+                nextBtn.style.display = '';
+                // Remove coming-soon message if present
+                const comingSoon = lbInfo.querySelector('.coming-soon-msg');
+                if (comingSoon) comingSoon.style.display = 'none';
+                updateLightboxImage();
+            }
+
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Reset animation for fresh entrance
+            lbInfo.style.animation = 'none';
+            lbPhone.style.animation = 'none';
+            lbInfo.offsetWidth; // trigger reflow
+            lbPhone.offsetWidth;
+            lbInfo.style.animation = '';
+            lbPhone.style.animation = '';
+        }
+
+        function updateLightboxImage() {
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCounter = document.getElementById('lightbox-counter');
+
+            lightboxImg.style.opacity = '0';
+            setTimeout(() => {
+                lightboxImg.src = currentProjectImages[currentImageIndex];
+                lightboxImg.style.opacity = '1';
+                lightboxCounter.textContent = `Image ${currentImageIndex + 1} of ${currentProjectImages.length}`;
+            }, 200);
+        }
+
+        function nextImage() {
+            if (currentProjectImages.length <= 1) return;
+            currentImageIndex = (currentImageIndex + 1) % currentProjectImages.length;
+            updateLightboxImage();
+        }
+
+        function prevImage() {
+            if (currentProjectImages.length <= 1) return;
+            currentImageIndex = (currentImageIndex - 1 + currentProjectImages.length) % currentProjectImages.length;
+            updateLightboxImage();
+        }
 
         function closeLightbox() {
-            if (lightbox) {
-                lightbox.classList.remove('active');
+            const lightbox = document.getElementById('phone-lightbox');
+            if (!lightbox || !lightbox.classList.contains('active')) return;
+            lightbox.classList.add('closing');
+            setTimeout(() => {
+                lightbox.classList.remove('active', 'closing');
                 document.body.style.overflow = '';
-            }
+            }, 350); // matches lightbox-out duration
         }
 
-        if (lightboxClose) {
-            lightboxClose.addEventListener('click', closeLightbox);
-        }
-        if (lightbox) {
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) closeLightbox();
+        // Gallery Event Listeners — wrapped in DOMContentLoaded because the
+        // lightbox HTML is placed AFTER this script tag, so the elements
+        // don't exist yet when the script first runs.
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('next-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                nextImage();
             });
-        }
+
+            document.getElementById('prev-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                prevImage();
+            });
+
+            const lightboxClose = document.getElementById('lightbox-close');
+            if (lightboxClose) {
+                lightboxClose.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeLightbox();
+                });
+            }
+
+            const lightbox = document.getElementById('phone-lightbox');
+            if (lightbox) {
+                lightbox.addEventListener('click', (e) => {
+                    if (e.target === lightbox) {
+                        closeLightbox();
+                    }
+                });
+            }
+        });
+
+        // Keyboard Navigation for Gallery (document-level, always works)
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeLightbox();
+            const lightbox = document.getElementById('phone-lightbox');
+            if (lightbox && lightbox.classList.contains('active')) {
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') prevImage();
+                if (e.key === 'Escape') closeLightbox();
+            }
         });
 
         // 10. Background Screenshots Flip Animation
@@ -3033,39 +3330,38 @@
                 // Auto cycle
                 setInterval(flipScreenshots, 4000);
 
-                // Lightbox handlers
-                const lightbox = document.getElementById('phone-lightbox');
-                const lightboxImg = document.getElementById('lightbox-img');
-
-                if (lightbox && lightboxImg) {
-                    items.forEach(item => {
-                        item.addEventListener('click', () => {
-                            const img = item.querySelector('img');
-                            if (img) {
-                                lightboxImg.src = img.src;
-                                lightboxImg.alt = img.alt;
-                                const lbPhone = document.querySelector('.lightbox-phone');
-                                if (lbPhone) {
-                                    lbPhone.style.animation = 'none';
-                                    lbPhone.offsetHeight;
-                                    lbPhone.style.animation = '';
-                                }
-                                lightbox.classList.add('active');
-                                document.body.style.overflow = 'hidden';
-                            }
-                        });
+                // Re-wire background items to use the same gallery logic
+                items.forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        const img = item.querySelector('img');
+                        if (img) {
+                            openGallery("App Showcase", "A glimpse into the user interface and experience of the application.", allScreenshots.slice(index).concat(allScreenshots.slice(0, index)));
+                        }
                     });
-                }
+                });
             }
         });
     </script>
-    <!-- Phone Screenshot Lightbox -->
+    <!-- Phone Screenshot Lightbox Enhanced -->
     <div id="phone-lightbox">
-        <button class="lightbox-close" id="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
-        <div class="lightbox-phone">
-            <div class="lightbox-notch"></div>
-            <img id="lightbox-img" src="" alt="App Screenshot">
-            <div class="lightbox-home-bar"></div>
+        <div class="lightbox-container">
+            <button class="nav-btn prev-btn" id="prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="nav-btn next-btn" id="next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+            <button class="lightbox-close" id="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+
+            <div class="lightbox-phone">
+                <div class="lightbox-notch"></div>
+                <div class="lightbox-img-container">
+                    <img id="lightbox-img" src="" alt="App Screenshot">
+                </div>
+                <div class="lightbox-home-bar"></div>
+            </div>
+
+            <div class="lightbox-info">
+                <span class="lightbox-counter" id="lightbox-counter">Image 1 of 5</span>
+                <h3 id="lightbox-project-title">Project Title</h3>
+                <p id="lightbox-project-desc">Project description goes here...</p>
+            </div>
         </div>
     </div>
 
